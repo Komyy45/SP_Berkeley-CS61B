@@ -116,7 +116,7 @@ public class Model extends Observable {
         // changed local variable to true.
         board.setViewingPerspective(side);
             for(int i =board.size()-1; i > -1; i--) {
-                processCol(i);changed=true;
+                changed = processCol(i,changed) || changed;
             }
         board.setViewingPerspective(Side.NORTH);
 
@@ -129,7 +129,7 @@ public class Model extends Observable {
         }
         return changed;
     }
-    private void processCol(int c)
+    private boolean processCol(int c, boolean changed)
     {
             boolean merged = false;
             int lastTaken = board.size();
@@ -153,7 +153,9 @@ public class Model extends Observable {
                     lastTaken--;
                     board.move(c,lastTaken,tile);
                 }
+                changed=true;
             }
+            return changed;
     }
 
     /** Checks if the game is over and sets the gameOver variable
@@ -211,7 +213,7 @@ public class Model extends Observable {
     public static boolean atLeastOneMoveExists(Board b) {
         for(int i = 0; i < b.size(); i++)
         {
-            for(int j = 1; j < b.size() ;j++)
+            for(int j = 0; j < b.size() ;j++)
             {
                 var currentTile = b.tile(i,j);
                 var topTile = i > 0 ? b.tile(i-1,j) : null;
