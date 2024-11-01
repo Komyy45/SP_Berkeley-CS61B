@@ -1,5 +1,7 @@
 package game2048;
 
+import ucb.gui.TopLevel;
+
 import java.util.Formatter;
 import java.util.Observable;
 
@@ -107,18 +109,154 @@ public class Model extends Observable {
      *    and the trailing tile does not.
      * */
     public boolean tilt(Side side) {
-        boolean changed;
-        changed = false;
+        boolean changed = false;
 
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+
+        if(Side.EAST == side)
+        {
+            for(int i =board.size()-1; i > -1; i--)
+            {
+                processRow(i,side);
+            }
+        }
+        else if(Side.NORTH == side)
+        {
+            for(int i =board.size()-1; i > -1; i--)
+            {
+                processCol(i,side);
+            }
+        }
+        else if(Side.WEST == side)
+        {
+            for(int i =board.size()-1; i > -1; i--)
+            {
+                processRow(i,side);
+            }
+        }
+        else if(Side.SOUTH == side)
+        {
+            for(int i =board.size()-1; i > -1; i--)
+            {
+                processCol(i,side);
+            }
+        }
+        changed=true;
+
 
         checkGameOver();
         if (changed) {
             setChanged();
         }
         return changed;
+    }
+
+    private void processRow(int r, Side side)
+    {
+        boolean merged = false;
+        if(Side.EAST == side)
+        {
+            int lastTaken = board.size();
+            for(int c = lastTaken-1;c > -1; c--) {
+                var tile = board.tile(c, r);
+                while (c > 0 && tile == null)
+                    tile = board.tile(--c, r);
+
+                if (c < 0 || tile == null) break;
+
+                if (!merged && lastTaken != board.size() && board.tile(lastTaken, r).value() == tile.value())
+                {
+                    board.move(lastTaken, r, tile);
+                    merged = true;
+                    score += (tile.value()*2);
+                }
+                else
+                {
+                    lastTaken--;
+                    board.move(lastTaken,r,tile);
+                }
+            }
+        }
+        else if(Side.WEST == side)
+        {
+            int lastTaken = -1;
+            for(int c = 0;c < board.size(); c++) {
+                var tile = board.tile(c, r);
+
+                while (c < board.size()-1 && tile == null)
+                    tile = board.tile(++c, r);
+
+                if (c >= board.size() || tile == null) break;
+
+                if (!merged && lastTaken != -1 && board.tile(lastTaken, r).value() == tile.value())
+                {
+                    board.move(lastTaken, r, tile);
+                    merged = true;
+                    score += (tile.value()*2);
+                }
+                else
+                {
+                    lastTaken++;
+                    board.move(lastTaken,r,tile);
+                }
+            }
+        }
+
+    }
+    private void processCol(int c, Side side)
+    {
+        boolean merged = false;
+        if(Side.NORTH == side)
+        {
+            int lastTaken = board.size();
+            for(int r = lastTaken-1;r > -1; r--)
+            {
+                var tile = board.tile(c,r);
+                while(r > 0 && tile == null)
+                    tile = board.tile(c,--r);
+
+                if(r<0||tile == null)break;
+
+                if(!merged && lastTaken != board.size() && board.tile(c,lastTaken).value() == tile.value())
+                {
+                    merged = true;
+                    board.move(c,lastTaken,tile);
+                    score += (tile.value()*2);
+                }
+                else
+                {
+                    lastTaken--;
+                    board.move(c,lastTaken,tile);
+                }
+            }
+        }
+        else if(Side.SOUTH == side)
+        {
+            int lastTaken = -1;
+            for(int r = 0;r < board.size(); r++)
+            {
+                var tile = board.tile(c,r);
+                while(r < board.size()-1 && tile == null)
+                    tile = board.tile(c,++r);
+
+                if(r >= board.size()||tile == null)break;
+
+                if(!merged && lastTaken != -1 && board.tile(c,lastTaken).value() == tile.value())
+                {
+                    merged = true;
+                    board.move(c,lastTaken,tile);
+                    score += (tile.value()*2);
+                }
+                else
+                {
+                    lastTaken++;
+                    board.move(c,lastTaken,tile);
+                }
+            }
+        }
+
     }
 
     /** Checks if the game is over and sets the gameOver variable
@@ -138,6 +276,13 @@ public class Model extends Observable {
      * */
     public static boolean emptySpaceExists(Board b) {
         // TODO: Fill in this function.
+        for(int i = 0; i < b.size(); i++)
+        {
+            for(int j = 0; j < b.size() ;j++)
+                if(b.tile(i,j) == null)
+                    return true;
+        }
+
         return false;
     }
 
@@ -147,7 +292,16 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        for(int i = 0; i < b.size(); i++)
+        {
+            for(int j = 0; j < b.size() ;j++)
+            {
+                var tile = b.tile(i,j);
+                if(tile != null && tile.value() == MAX_PIECE)
+                    return true;
+            }
+        }
+
         return false;
     }
 
@@ -158,7 +312,20 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        for(int i = 0; i < b.size(); i++)
+        {
+            for(int j = 1; j < b.size() ;j++)
+            {
+                var currentTile = b.tile(i,j);
+                var topTile = i > 0 ? b.tile(i-1,j) : null;
+                var rightTile = j < b.size()-1 ? b.tile(i,j+1) : null;
+                if(currentTile == null) return true;
+
+                if((topTile != null && topTile.value() == currentTile.value())
+                    || (rightTile != null && rightTile.value() == currentTile.value()))
+                    return true;
+            }
+        }
         return false;
     }
 
