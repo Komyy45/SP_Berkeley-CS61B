@@ -83,4 +83,10 @@ public class ArrayDeque<T> implements IDeque<T> {
         capacity--;
         return deletedItem;
     }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return capacity == 0;
+    }
 }

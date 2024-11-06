@@ -117,6 +117,7 @@ public class LinkedListDeque<T> implements IDeque<T> {
         return index >= 0 && index < capacity;
     }
 
+    @Override
     public boolean isEmpty(){
         return capacity == 0;
     }
