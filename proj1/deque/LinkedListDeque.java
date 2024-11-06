@@ -1,6 +1,6 @@
 package deque;
 
-public class LinkedListDeque<T> {
+public class LinkedListDeque<T> implements IDeque<T> {
 
     private static class ListNode<T>
     {
@@ -40,11 +40,13 @@ public class LinkedListDeque<T> {
         sentinel.next = sentinel.prev = sentinel;
         capacity = 0;
     }
-
+    @Override
     public int size()
     {
         return capacity;
     }
+
+    @Override
     public void addFirst(T item)
     {
         ListNode<T> nodeAfterTheNewOnes = sentinel.next;
@@ -54,6 +56,7 @@ public class LinkedListDeque<T> {
         capacity++;
     }
 
+    @Override
     public void addLast(T item)
     {
         ListNode<T> nodeBeforeTheNewOnes = sentinel.prev;
@@ -63,6 +66,7 @@ public class LinkedListDeque<T> {
         capacity++;
     }
 
+    @Override
     public T removeFirst()
     {
         if(capacity == 0) return null;
@@ -73,6 +77,7 @@ public class LinkedListDeque<T> {
         return firstNode.item;
     }
 
+    @Override
     public T removeLast()
     {
         if(capacity == 0) return null;
@@ -83,6 +88,7 @@ public class LinkedListDeque<T> {
         return lastNode.item;
     }
 
+    @Override
     public T get(int index)
     {
         if(!checkForIndex(index)) throw new IndexOutOfBoundsException();
