@@ -1,8 +1,9 @@
 package deque;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
-public class ArrayDeque<T> implements IDeque<T> {
+public class ArrayDeque<T> implements IDeque<T>, Iterable<T> {
     private T[] items;
     private int head;
     private int tail = -1;
@@ -85,8 +86,24 @@ public class ArrayDeque<T> implements IDeque<T> {
     }
 
     @Override
-    public boolean isEmpty()
+    public Iterator<T> iterator() {
+        return new ArrayDequeIterator();
+    }
+
+    private class ArrayDequeIterator implements Iterator<T>
     {
-        return capacity == 0;
+        int curDex = 0;
+        int curElement = head;
+        @Override
+        public boolean hasNext() {
+            return curDex < capacity;
+        }
+
+        @Override
+        public T next() {
+            curDex++;
+            curElement++;
+            return items[curElement % items.length];
+        }
     }
 }

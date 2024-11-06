@@ -7,5 +7,7 @@ public interface IDeque<T> {
     T removeLast();
     T get(int index);
     int size();
-    boolean isEmpty();
+    default boolean isEmpty(){
+        return size() == 0;
+    }
 }

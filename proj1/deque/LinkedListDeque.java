@@ -117,11 +117,6 @@ public class LinkedListDeque<T> implements IDeque<T> {
         return index >= 0 && index < capacity;
     }
 
-    @Override
-    public boolean isEmpty(){
-        return capacity == 0;
-    }
-
     public void printDeque()
     {
         for(ListNode<T> i = sentinel.next; i != sentinel; i = i.next)
